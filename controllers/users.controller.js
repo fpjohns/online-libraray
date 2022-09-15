@@ -37,28 +37,14 @@ module.exports.usersController = {
       res.json(e);
     }
   },
-  changeUser: async (req, res) => {
-    try {
-      const admin = User.findById(req.params._adminId);
-      const user = User.findById(req.params._userId);
-      const book = Book.findById(req.params._bookId);
-      if (admin.returnBook) {
-        return res.json("пользователь блокирутеся");
-      }
-      if (!user.isBlocked) {
-        return res.json("вы не заблокированы и можете взять книгу в аренду");
-      }
-      if (user.rentedBook) {
-        res.json("юзер хочет арендовать книгу");
-      }
-      if (!book.isRented) {
-        await book.updateOne({
-          $push: { rentedBook: [] },
-        });
-        return res.json("книга ни кем не арендуется");
-      }
-    } catch (e) {
-      res.json(e);
-    }
+  ban: async (req, res) => {
+    await User.findByIdAndUpdate(req.params.userId, {
+      isBlocked: true,
+      rentedBook: [],
+    });
+    await Book.find({ isRented: req.params.userId }).updateMany({
+      isRented: null,
+    });
+    return res.json("пользователь заблокирован, и книги возвращены");
   },
 };

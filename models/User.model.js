@@ -8,10 +8,6 @@ const userSchema = mongoose.Schema({
       ref: "Book",
     },
   ],
-  banUser: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
-  }
 });
 const User = mongoose.model("User", userSchema);
 module.exports = User;

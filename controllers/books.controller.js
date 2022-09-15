@@ -56,10 +56,12 @@ module.exports.booksController = {
       if (user.rentedBooks.length >= 3) {
         return res.json("нельзя арендовать больше 3-х книг одновременно");
       }
-      if (user.isBlocked) {
+      if (user.isBlocked === true) {
         return res.json("этот пользователь заблокирован");
       }
-      if (!book.isRented) {
+      if (book.isRented !== null) {
+        res.json("книга уже арендована");
+      } else {
         await book.updateOne({
           isRented: req.params._userId,
         });
@@ -67,8 +69,6 @@ module.exports.booksController = {
           $push: { rentedBooks: req.params._bookId },
         });
         return res.json("юзер арендовал книгу");
-      } else {
-        res.json("книга уже арендована");
       }
     } catch (e) {
       res.json(e);
